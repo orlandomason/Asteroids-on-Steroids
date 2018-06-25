@@ -261,26 +261,6 @@ function render() {
     
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function asteroid(type, x, y) {
 
     this.type = type;
@@ -319,94 +299,11 @@ function asteroid(type, x, y) {
             silicon: 100
         };*/
     }
-
-    /*this.asteroid_map = [];
-
-    for (var x = 0; x < this.width; x++) {
-        this.asteroid_map[x] = [];
-        for (var y = 0; y < this.height; y++) {
-
-            this.asteroid_map[x][y] = -0.10 * (y*y) + 10 * y + Math.floor(Math.random() * 4);
-        }
-    }*/
-
+    
     this.render = function() {
 
         ctx.drawImage(this.image, this.x - camera_x, this.y - camera_y, this.width*zoom, this.width*zoom);
-
-        /*
-        x' = x*cos(r) - y*sin(r) + b
-        y' = x*sin(r) + y*cos(r) + a
-        */
-
-
-        /* Rotation
-
-        var o = this.asteroid_map;
-
-        var w = this.width;
-        var h = this.height;
-
-        var a = w/2;
-        var b = h/2;
-
-        var r = this.rotation * Math.PI / 180;
-
-        var p = [];
-
-        for (var x = 0; x < 100; x++) {
-            p[x] = [];
-            for (var y = 0; y < 100; y++) {
-
-                // (nx, ny) = (x, y) rotated about point (a, b)
-                var nx = (x - a) * Math.cos(r) - (y - b) * Math.sin(r) + a;
-                var ny = (x - a) * Math.sin(r) + (y - b) * Math.cos(r) + b;
-
-                p[x][y] = [nx, ny];
-
-                var arrat = []
-
-                var tl = [Math.floor(nx), Math.ceil(ny)]
-                var bl = [Math.floor(nx), Math.floor(ny)]
-                var tr = [Math.ceil(nx), Math.ceil(ny)]
-                var br = [Math.ceil(nx), Math.floor(ny)]
-
-                (((1 - nx % 1) + (1 - ny % 1)) / 2) * o[x][y]
-
-
-
-                ctx.globalAlpha = 0.2;
-
-
-                //p[Math.floor(nx)][Math.floor(ny)] = o[x][y];
-
-                /*p[x][y] = (
-                (((1 - nx % 1) + (1 - ny % 1)) / 2) * o[x][y] +
-                (((1 - nx % 1) + (ny % 1)) / 2) * o[x][y]] +
-                (((nx % 1) + (1 - ny % 1)) / 2) * o[x][y] +
-                (((nx % 1) + (ny % 1)) / 2) * o[x][y]
-                ) / 4;*/
-                /*ctx.globalAlpha = 0.2;
-                ctx.fillStyle = "000";
-                ctx.fillRect(Math.floor(nx), Math.floor(ny), 1, 1);
-            }*/
-        }
-
-        //var p = this.asteroid_map;
-        /*for (var x = 0; x < w; x++) {
-            for (var y = 0; y < h; y++) {
-
-                if(p[x][y] < p[x][y+1]) {
-                    ctx.fillStyle = "rgba(0, 0, 0, " + 1 / (p[x][y+1] - p[x][y]) + ")";
-                } else { ctx.fillStyle = "000"; }
-                ctx.fillRect(x, y, 1, 1);
-            }
-        }*/
-        /*for (var x = 0; x < w; x++) {
-            ctx.fillStyle = "000";
-            ctx.fillRect(x, h, 1, 1);
-        }
-    }*/
+    }
 }
 
 
@@ -486,46 +383,4 @@ this.render = function() {
     //ctx.rotate(angle*Math.PI/180);
     ctx.drawImage(this.image, a, b);
 }*/
-
-
-
-
-
-function createButton(x, y, font_size, type, text, active = false) {
-    
-    this.type = type;
-    this.text = text;
-    this.active = active;
-    this.width = font_size * text.length;
-    this.height = font_size * 2;
-
-    this.changeText = function(new_text) {
-        this.text = new_text;
-        this.width = font_size * new_text.length;
-        this.height = font_size * 2;
-    }
-    this.render = function() {
-        ctx.fillStyle = 'lightgrey';
-        ctx.fillRect(x, y, this.width, this.height);
-        ctx.strokeStyle = 'grey';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(x, y, this.width, this.height);
-
-        ctx.font = font_size + 'px Courier New';
-        ctx.fillStyle = 'black';
-        ctx.textAlign = "center";
-        ctx.fillText(this.text, x+this.width/2, y+(this.height/21)*13);
-    }
-    this.clicked = function(click_x, click_y) {
-        var left = x;
-        var right = x+this.width;
-        var top = y;
-        var bottom = y+this.height;
-        var clicked = true;
-        if ((bottom < click_y) || (top > click_y) || (right < click_x) || (left > click_x)) {
-            clicked = false;
-        }
-        return clicked;
-    }
-}
 
