@@ -9,7 +9,7 @@ var canvas_1 = {
         this.context = document.getElementById('canvas_1').getContext("2d");
         document.body.insertBefore(document.getElementById('canvas_1'), document.body.childNodes[0]);
         this.frameNo = 0;
-        this.interval = setInterval(updateGame, 50);
+        this.interval = setInterval(updateGame, 100);
 
 
         // |---------------------------|
@@ -87,8 +87,8 @@ var canvas_1 = {
 
 // Global variables
 var zoom = 1;
-var zoom_x = 0;
-var zoom_y = 0;
+var offset_x = 0;
+var offset_y = 0;
 var camera_x = 0;
 var camera_y = 0;
 
@@ -194,30 +194,30 @@ function updateGame() {
 
 
     // Zoom
-    if (canvas_1.keys[107] && zoom < 2 && zoom_x<450) { 
-        zoom+=0.1; 
-        
-        zoom_x = canvas_1.width * (zoom - 1) / 2; 
-        zoom_y = canvas_1.height * (zoom - 1) / 2;
+    if (canvas_1.keys[107] && zoom < 2) { 
 
-        camera_x += zoom_x; 
-        camera_y += zoom_y; 
+        var ax = canvas_1.mouse_x / zoom + offset_x / zoom;
+        var ay = canvas_1.mouse_y / zoom + offset_y / zoom;
 
-        console.log(zoom_x);
-        console.log(zoom_y);
+        console.log(canvas_1.mouse_x / zoom + offset_x / zoom);
+
+        zoom += 0.1;
+
+        offset_x = ax * (zoom - 1);
+        offset_y = ay * (zoom - 1);
     }
+
     if (canvas_1.keys[109] && zoom > 1) {
-        zoom-=0.1;  
 
-        zoom_x = canvas_1.width * (zoom - 1) / 2; 
-        zoom_y = canvas_1.height * (zoom - 1) / 2;
+        var ax = canvas_1.mouse_x / zoom + offset_x / zoom; // This does not seem to be the problem
+        var ay = canvas_1.mouse_y / zoom + offset_y / zoom; // or at least it gives an accurate answer
 
-        camera_x -= zoom_x; 
-        camera_y -= zoom_y;
-        
-        console.log(zoom_x);
-        console.log(zoom_y);
-        
+        console.log(canvas_1.mouse_x / zoom + offset_x / zoom);
+
+        zoom -= 0.1; // I've tried moving this to the start and to the end, it only works properly here
+
+        offset_x = ax * (zoom - 1); // I think the problem lies here in the zoom part, or something is missing
+        offset_y = ay * (zoom - 1); // The problem also occurs when moving the mouse around when you zoom in
     }
 
     // left right up down
@@ -229,7 +229,7 @@ function updateGame() {
 }
 
 var background = new Image(); 
-background.src = 'seamless_space.png';
+background.src = 'seamless_space_dot.png';
 
 function render() {
 
@@ -240,20 +240,30 @@ function render() {
     canvas_1.height = window.innerHeight;
 
     // Background ///////////////////////////////////////
-    background.src = 'seamless_space.png';
 
     // canvas_1.mouse_x
 
     var background_width = 500 * zoom;
     var background_height = 500 * zoom;
 
-    for (var i = 0; i < (canvas_1.width + (zoom_x % 500)) / background_width; i++) {
+    for (var i = 0; i < canvas_1.width + background_width; i += background_width) {
+
+        for (var j = 0; j < canvas_1.height + background_height; j += background_height) {
+
+            var bpx = i - offset_x;
+            var bpy = j - offset_y;
+
+            ctx.drawImage(background, bpx, bpy, background_width, background_height);
+        }
+    }
+
+    /*for (var i = 0; i < (canvas_1.width + (zoom_x % 500)) / background_width; i++) {
         for (var j = 0; j < (canvas_1.height + (zoom_y % 500)) / background_height; j++) {
             var offset_x = i * background_width - (zoom_x % 500);
             var offset_y = j * background_height - (zoom_y % 500);
             ctx.drawImage(background, offset_x, offset_y, background_width, background_height);
         }
-    }
+    }*/
     /////////////////////////////////////////////////////
 
     asteroidus.render();
@@ -299,7 +309,7 @@ function asteroid(type, x, y) {
             silicon: 100
         };*/
     }
-    
+
     this.render = function() {
 
         ctx.drawImage(this.image, this.x - camera_x, this.y - camera_y, this.width*zoom, this.width*zoom);
