@@ -119,9 +119,6 @@ var left_click_count = 0;
 var left_clicks = [];
 
 
-var asteroidus = new asteroid("c-type");
-
-
 function updateGame() {
     canvas_1.clear();
     render();
@@ -255,91 +252,8 @@ function render() {
 
             ctx.drawImage(background, bpx, bpy, background_width, background_height);
         }
-    }
-
-    /*for (var i = 0; i < (canvas_1.width + (zoom_x % 500)) / background_width; i++) {
-        for (var j = 0; j < (canvas_1.height + (zoom_y % 500)) / background_height; j++) {
-            var offset_x = i * background_width - (zoom_x % 500);
-            var offset_y = j * background_height - (zoom_y % 500);
-            ctx.drawImage(background, offset_x, offset_y, background_width, background_height);
-        }
-    }*/
-    /////////////////////////////////////////////////////
-
-    asteroidus.render();
-    // Map = 12 * 1;
-    
+    }    
 }
-
-function asteroid(type, x, y) {
-
-    this.type = type;
-    this.width = 100;
-    this.height = 100;
-    this.x = x;
-    this.y = y;
-    this.rotation = 45;
-
-    this.image = new Image();
-    this.image.src = 'vesta.png';
-
-    if (type == "c-type") {
-
-        // Getting a random integer between two values, inclusive  -->  Math.floor(Math.random() * (max - min + 1)) + min;
-
-        // Silica 25% - 40%
-        // Magnesia 20% - 25%
-        // Ferrous oxide 10% - 22%
-        // Graphite 1% - 7%
-        // Sulfur 1% - 6%
-        // Alumina 2% - 3%
-        
-        // Ammonia 0% - 1%
-
-        // Math.round(Math.pow(Math.random(), 2)*100)/100; 
-        // Exponential curve up to 1, rounded to 2dp
-
-
-        // Phosphorus (P2O5) 0% - 0.4%
-        // Potassium (K2O) 0% - 0.1%
-
-      /*this.resources = {
-            graphite: graphite, 
-            ice: 100, 
-            silicon: 100
-        };*/
-    }
-
-    this.render = function() {
-
-        ctx.drawImage(this.image, this.x - camera_x, this.y - camera_y, this.width*zoom, this.width*zoom);
-    }
-}
-
-
-// Weight is molar mass and density is g/cm3 (mostly at room temperature or when solid)
-
-function material(name, weight, density, chemical_formula = "n/a") {
-
-}
-
-var materials = [
-
-new material("platinum group metals", 150, 16),
-new material("graphite", 12.011, 2.266, "C"),
-new material("silica", 60.08, 2.648, "SiO2"),
-new material("alumina", 101.96, 3.987, "Al2O3"),
-new material("ferrous oxide", 71.844, 5.74, "FeO"),
-new material("magnesia", 40.3044, 3.58, "MgO"),
-
-// Volatiles
-new material("water ice", 18.01528, 0.9340, "H2O"), 
-new material("phosphorus", 283.886, 2.39, "P2O5"),
-new material("potassium", 94.2, 2.35, "K2O"),
-new material("sulfur", 32.065, 2, "S"),
-new material("ammonia", 17.031, 8.17, "NH3"),
-];
-
 
 function drawShape(arr, close_path = false, color = 'lightgrey', border_width = 0, border_color = 'black') {
 
