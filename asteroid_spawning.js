@@ -46,6 +46,7 @@ ammonia: new resource("ammonia", 17.031, 8.17, "NH3")
 function asteroid(type, size, pos_x, pos_y) {
 
     this.type = type;
+    this.size = size;
     this.x = pos_x;
     this.y = pos_y;
 
@@ -96,7 +97,9 @@ function asteroid(type, size, pos_x, pos_y) {
     this.image.src = 'vesta.png';
         
     this.render = function() {
-
-
+        var zoomed_size = this.size * zoom;
+        var tlx = this.x - camera_x - (this.size * zoom / 2);
+        var tly = this.y - camera_y - (this.size * zoom / 2);
+        ctx.drawImage(this.image, tlx, tly, zoomed_size, zoomed_size);
     }
 }

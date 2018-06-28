@@ -13,7 +13,7 @@
 		canvas {
 		    border: 0px solid #d3d3d3;
 		    background-color: #f1f1f1;
-		    display: block;
+		    display: none;
 		}
 		</style>
 		<script language="javascript" type="text/javascript" src="useful_functions.js"></script>
@@ -24,7 +24,15 @@
 	    <script language="javascript" type="text/javascript" src="game.js"></script>
 	</head>
 
-	<body onload="startGame()">
+	<!--onload="startGame()"-->
+	<body>
+		<main id="non_canvas_content">
+			<form id="frm1" action="/action_page.php">
+			  First name: <input type="text" name="fname"><br>
+			  Last name: <input type="text" name="lname"><br><br>
+			  <input type="button" onclick="startGame()" value="Submit">
+			</form>
+		</main>
 
 		<canvas id="canvas_1"></canvas>
 		

@@ -1,6 +1,13 @@
 function startGame() {
 	canvas_1.start();
+
+    document.getElementById('non_canvas_content').style.display ='none';
+    document.getElementById('canvas_1').style.display ='block';
+
+    generateMap();
 }
+
+var fps = 20;
 
 var canvas_1 = {
     start : function() {
@@ -8,8 +15,7 @@ var canvas_1 = {
         this.height = window.innerHeight;
         this.context = document.getElementById('canvas_1').getContext("2d");
         document.body.insertBefore(document.getElementById('canvas_1'), document.body.childNodes[0]);
-        this.frameNo = 0;
-        this.interval = setInterval(updateGame, 100);
+        this.interval = setInterval(updateGame, fps / 1000);
 
 
         // |---------------------------|
@@ -89,18 +95,19 @@ var canvas_1 = {
 var zoom = 1;
 var offset_x = 0;
 var offset_y = 0;
-var camera_x = 0;
-var camera_y = 0;
+
+var camera_x = map_width / 2;
+var camera_y = map_height / 2;
+var camera_speed = Math.round(20 / fps);
+var camera_speed_i = camera_speed;
+var camera_speed_max = camera_speed * 8;
+var camera_speed_ir = 5 * fps; // Increment rate
+var akd = false; // Arrow key down
+
+var update_count = 0;
 
 var game_objects = [];
 var temporary_objects = [];
-
-// build_mode variables
-var build_mode = false;
-var grid_points = [];
-var build_mode_objects = [];
-var build_mode_buttons = [];
-
 
 // updateGame variables
 var left_mouse_down = false;
@@ -120,6 +127,8 @@ var left_clicks = [];
 
 
 function updateGame() {
+    update_count++;
+
     canvas_1.clear();
     render();
     // Mouse and keyboard inputs 
@@ -137,7 +146,7 @@ function updateGame() {
     }
 
     // Left mouse button is up
-    else {
+    /*else {
 
         if (left_mouse_down) {
 
@@ -161,7 +170,7 @@ function updateGame() {
 
             left_mouse_down = false;
         }
-    }
+    }*/
 
 
     // Middle mouse button is down
@@ -217,12 +226,30 @@ function updateGame() {
         offset_y = ay * (zoom - 1); // The problem also occurs when moving the mouse around when you zoom in
     }
 
-    // left right up down
-    if (canvas_1.keys[37]) { camera_x--; }
-    if (canvas_1.keys[39]) { camera_x++; }
-    if (canvas_1.keys[38]) { camera_y--; }
-    if (canvas_1.keys[40]) { camera_y++; }
+    // Arrow keys: left right up down
+    if (canvas_1.keys[37]) { 
+        if (camera_x > 0) { camera_x -= camera_speed_i; akd = true; } 
+    } 
+    if (canvas_1.keys[39]) { 
+       if (camera_x < map_width) { camera_x += camera_speed_i; akd = true; }
+    }
+    if (canvas_1.keys[38]) { 
+        if (camera_y > 0) { camera_y -= camera_speed_i; akd = true; }
+    }
+    if (canvas_1.keys[40]) { 
+        if (camera_y < map_height) { camera_y += camera_speed_i; akd = true; }
+    }
 
+    // If any arrow key is pressed
+    if (akd) {
+        if (update_count % camera_speed_ir == 0) {
+            camera_speed_i = incrementNumber(camera_speed_i, 1, camera_speed_max);
+        }
+        akd = false;
+    }
+    else { 
+        camera_speed_i = camera_speed; 
+    }
 }
 
 var background = new Image(); 
@@ -247,12 +274,17 @@ function render() {
 
         for (var j = 0; j < canvas_1.height + background_height; j += background_height) {
 
-            var bpx = i - offset_x;
-            var bpy = j - offset_y;
+            var bpx = i - offset_x - Math.round((camera_x / 5) % 500);
+            var bpy = j - offset_y - Math.round((camera_y / 5) % 500);
 
             ctx.drawImage(background, bpx, bpy, background_width, background_height);
         }
-    }    
+    }
+    //////////////////////////////////////////////////////
+
+    for (var i = 0; i < asteroids.length; i++) {
+        asteroids[i].render();
+    }
 }
 
 function drawShape(arr, close_path = false, color = 'lightgrey', border_width = 0, border_color = 'black') {

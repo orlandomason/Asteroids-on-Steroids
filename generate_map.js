@@ -6,6 +6,20 @@ var asteroid_max_size = 100;
 var asteroid_min_size = 1;
 var number_of_asteroids = 100;
 
+// Minimum and average distance between asteroids
+var min_dist = 200;
+var avg_dist = 500; // Must be more than min_dist by a significant margin
+
+// Map size
+var map_area = Math.PI * Math.pow(avg_dist, 2) * number_of_asteroids;
+var map_ratio = 1; // width to height
+var map_margin = min_dist; // No asteroids will spawn within this margin around the map
+var map_spawn_width = Math.round((1 - 1 / (map_ratio + 1)) * Math.sqrt(map_area));
+var map_spawn_height = Math.round((1 / (map_ratio + 1)) * Math.sqrt(map_area));
+
+var map_width = map_spawn_width + map_margin * 2;
+var map_height = map_spawn_height + map_margin * 2;
+
 var average_number_of_max_size = 0.2; 
 // A value of 0.5 would mean on average there are 0.5 asteroids of the size asteroid_max_size
 // This affects the average number of all the asteroids smaller than this as well
@@ -23,7 +37,7 @@ var use_chance_of_max_size = false;
 var asda = 10; // asteroid size distrbution averaging, must be 1 or more and preferably not too big (like 1000 or more)
 // The higher it is the more even the distribution asteroids from large to small
 
-function generateMap(width, height, asteroid_density) {
+function generateMap() {
 
 	var avn = -chance_of_max_size / (chance_of_max_size - 1);
 
@@ -67,7 +81,7 @@ function generateMap(width, height, asteroid_density) {
 			if (arr.length) {
 			    sum = arr.reduce(function(a, b) { return a + b; });
 			    avg = Math.round(sum / arr.length); /// avg is the number of asteroids to spawn of size i
-			}			
+			}
 		} 
 
 		else { alert("probability (var p) was equal to or more than 1") }
@@ -76,7 +90,22 @@ function generateMap(width, height, asteroid_density) {
 		loop2:
 		for (var j = 0; j < avg; j++) {
 
-			asteroids.push(i);
+			var x = getRandomInt(map_margin, map_spawn_width + map_margin);
+			var y = getRandomInt(map_margin, map_spawn_width + map_margin);
+
+			// Check that coordinates are the minimum distance from each asteroids
+			for (var k = 0; k < asteroids.length; k++) {
+
+				// Calculate distance between coordinates and each asteroid
+				var dist = Math.sqrt( Math.pow(x - asteroids[k].x, 2) + Math.pow(y - asteroids[k].y, 2) );
+
+				if (dist < min_dist) {
+					x = getRandomInt(map_margin, map_spawn_width + map_margin);
+					y = getRandomInt(map_margin, map_spawn_width + map_margin);
+					k = 0;
+				}
+			}
+			asteroids.push(new asteroid("c-type", i, x, y));
 			asteroid_count++;
 
 			if (asteroid_count >= number_of_asteroids) {
