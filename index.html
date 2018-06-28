@@ -16,12 +16,17 @@
 		    display: none;
 		}
 		</style>
+		<!--
 		<script language="javascript" type="text/javascript" src="useful_functions.js"></script>
 		<script language="javascript" type="text/javascript" src="ui_objects.js"></script>
 
 		<script language="javascript" type="text/javascript" src="asteroid_spawning.js"></script>
 		<script language="javascript" type="text/javascript" src="generate_map.js"></script>
-	    <script language="javascript" type="text/javascript" src="game.js"></script>
+	    <script language="javascript" type="text/javascript" src="game.js"></script> -->
+
+	    <!-- data-main attribute tells require.js to load
+             scripts/main.js after require.js loads. -->
+        <script data-main="scripts/main" src="scripts/require.js"></script>
 	</head>
 
 	<!--onload="startGame()"-->
@@ -30,7 +35,7 @@
 			<form id="frm1" action="/action_page.php">
 			  First name: <input type="text" name="fname"><br>
 			  Last name: <input type="text" name="lname"><br><br>
-			  <input type="button" onclick="startGame()" value="Submit">
+			  <input type="button" onclick="loadGame()" value="Submit">
 			</form>
 		</main>
 
