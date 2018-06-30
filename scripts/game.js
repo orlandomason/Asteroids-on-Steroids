@@ -129,6 +129,8 @@ var left_clicks = [];
 function updateGame() {
     update_count++;
 
+    ctx = canvas_1.context;
+
     canvas_1.clear();
     render();
     // Mouse and keyboard inputs 
@@ -226,18 +228,20 @@ function updateGame() {
         offset_y = ay * (zoom - 1); // The problem also occurs when moving the mouse around when you zoom in
     }
 
+    var max_camera_x = map_width - canvas_1.width / zoom;
+    var max_camera_y = map_height - canvas_1.height / zoom;
     // Arrow keys: left right up down
     if (canvas_1.keys[37]) { 
         if (camera_x > 0) { camera_x -= camera_speed_i; akd = true; } 
     } 
     if (canvas_1.keys[39]) { 
-       if (camera_x < map_width) { camera_x += camera_speed_i; akd = true; }
+       if (camera_x < max_camera_x) { camera_x += camera_speed_i; akd = true; }
     }
     if (canvas_1.keys[38]) { 
         if (camera_y > 0) { camera_y -= camera_speed_i; akd = true; }
     }
     if (canvas_1.keys[40]) { 
-        if (camera_y < map_height) { camera_y += camera_speed_i; akd = true; }
+        if (camera_y < max_camera_y) { camera_y += camera_speed_i; akd = true; }
     }
 
     // If any arrow key is pressed
@@ -253,11 +257,10 @@ function updateGame() {
 }
 
 var background = new Image(); 
-background.src = 'seamless_space_dot.png';
+background.src = 'seamless_space.png';
 
 function render() {
 
-	ctx = canvas_1.context;
     ctx.canvas.width  = window.innerWidth;
     ctx.canvas.height = window.innerHeight;
     canvas_1.width = window.innerWidth;
@@ -274,8 +277,8 @@ function render() {
 
         for (var j = 0; j < canvas_1.height + background_height; j += background_height) {
 
-            var bpx = i - offset_x - Math.round((camera_x / 5) % 500);
-            var bpy = j - offset_y - Math.round((camera_y / 5) % 500);
+            var bpx = i - offset_x - Math.round((camera_x / 10) % 500);
+            var bpy = j - offset_y - Math.round((camera_y / 10) % 500);
 
             ctx.drawImage(background, bpx, bpy, background_width, background_height);
         }
@@ -283,7 +286,7 @@ function render() {
     //////////////////////////////////////////////////////
 
     for (var i = 0; i < asteroids.length; i++) {
-        asteroids[i].render();
+        asteroids[i].update();
     }
 }
 

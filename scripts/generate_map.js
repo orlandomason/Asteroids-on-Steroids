@@ -7,8 +7,8 @@ var asteroid_min_size = 1;
 var number_of_asteroids = 100;
 
 // Minimum and average distance between asteroids
-var min_dist = 200;
-var avg_dist = 500; // Must be more than min_dist by a significant margin
+var min_dist = 400;
+var avg_dist = 800; // Must be more than min_dist by a significant margin
 
 // Map size
 var map_area = Math.PI * Math.pow(avg_dist, 2) * number_of_asteroids;

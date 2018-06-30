@@ -36,3 +36,29 @@ function createButton(x, y, font_size, type, text, active = false) {
         return clicked;
     }
 }
+
+function mouseOverText(text, font = 'Courier New', font_size = 12) {
+
+    this.text = text;
+    this.width = font_size * text.length;
+    this.height = font_size * 2;
+
+    this.changeText = function(new_text) {
+        this.text = new_text;
+        this.width = font_size * new_text.length;
+        this.height = font_size * 2;
+    }
+    this.render = function(x, y) {
+        
+        ctx.fillStyle = 'lightgrey';
+        ctx.fillRect(x, y, this.width, this.height);
+        ctx.strokeStyle = 'grey';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, this.width, this.height);
+
+        ctx.font = font_size + 'px' + font;
+        ctx.fillStyle = 'black';
+        ctx.textAlign = 'center';
+        ctx.fillText(this.text, x+this.width/2, y+(this.height/21)*13);
+    }
+}

@@ -1,4 +1,4 @@
-function loadGame() {
+function loadFiles() {
 	
 	require([
 		'useful_functions',
@@ -6,8 +6,11 @@ function loadGame() {
 		'asteroid_spawning',
 		'generate_map',
 		'game'
-		], function(myFile) {
+		], function() {
 
-	  	startGame();
+	  	setTimeout(loadGame, 1000);
 	});
+}
+function loadGame() {
+	startGame();
 }

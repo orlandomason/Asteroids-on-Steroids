@@ -58,7 +58,8 @@ function asteroid(type, size, pos_x, pos_y) {
         var graphite = getRandomFloat(1, 7, 1);
         var iron = getRandomInt(15, 40);
         var magnesia = getRandomInt(20, 25);
-        var silica = 100 - ammonia + alumina + sulphur + graphite + iron + magnesia;
+        var silica = 83 - iron - magnesia;
+        var other = Math.round((100 - ammonia - alumina - sulphur - graphite - iron - magnesia - silica) * 100) / 100;
 
         
         this.resources = {
@@ -68,8 +69,11 @@ function asteroid(type, size, pos_x, pos_y) {
             graphite: graphite,
             iron: iron,
             magnesia: magnesia,
-            silica: silica
+            silica: silica,
+            other: other
         }
+
+        //this.text_box = new mouseOverText(this.x, this.y, "ammonia");
 
         // Getting a random integer between two values, inclusive  -->  Math.floor(Math.random() * (max - min + 1)) + min;
 
@@ -92,14 +96,35 @@ function asteroid(type, size, pos_x, pos_y) {
 
     }
 
+    //this.text = mouseOverText("example");
 
     this.image = new Image();
     this.image.src = 'vesta.png';
+
+    this.update = function() {
+
+        this.zoomed_size = this.size * zoom;
+        this.onscreen_x = this.x - camera_x - (this.zoomed_size / 2);
+        this.onscreen_y = this.y - camera_y - (this.zoomed_size / 2);
+
+        this.left = this.onscreen_x;
+        this.right = this.onscreen_x + this.zoomed_size;
+        this.top = this.onscreen_y;
+        this.bottom = this.onscreen_y + this.zoomed_size;
+
+        this.mouseOver();
+        this.render();
+    }
         
     this.render = function() {
-        var zoomed_size = this.size * zoom;
-        var tlx = this.x - camera_x - (this.size * zoom / 2);
-        var tly = this.y - camera_y - (this.size * zoom / 2);
-        ctx.drawImage(this.image, tlx, tly, zoomed_size, zoomed_size);
+
+        ctx.drawImage(this.image, this.onscreen_x, this.onscreen_y, this.zoomed_size, this.zoomed_size);
+    }
+
+    this.mouseOver = function() {
+
+        if ((this.bottom > canvas_1.mouse_y) && (this.top < canvas_1.mouse_y) && (this.right > canvas_1.mouse_x) && (this.left < canvas_1.mouse_x)) {
+            //this.text.render();
+        }
     }
 }
