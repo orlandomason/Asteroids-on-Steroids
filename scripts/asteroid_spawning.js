@@ -42,6 +42,8 @@ sulphur: new resource("sulphur", 32.065, 2, "S"),
 ammonia: new resource("ammonia", 17.031, 8.17, "NH3")
 };
 
+//{resource: iron, type: metal, goldschmidt_classification: siderophile}
+
 
 function asteroid(type, size, pos_x, pos_y) {
 
@@ -98,9 +100,16 @@ function asteroid(type, size, pos_x, pos_y) {
 
     var text = [];
     for (let [property, value] of Object.entries(this.resources)) {
-        text.push(property+": "+value+"%");
+        text.push({resource: property, percentage: value, text: property+": "+value+"%"});
     }
-    var text_box = new mouseOverText(text);
+
+    text.sort(function (a, b) {
+        return b.percentage - a.percentage;
+    });
+
+
+    this.text_box = new mouseOverText(text);
+
 
     this.image = new Image();
     this.image.src = 'vesta.png';
@@ -108,8 +117,11 @@ function asteroid(type, size, pos_x, pos_y) {
     this.update = function() {
 
         this.zoomed_size = this.size * zoom;
-        this.onscreen_x = this.x - camera_x - (this.zoomed_size / 2);
-        this.onscreen_y = this.y - camera_y - (this.zoomed_size / 2);
+
+        this.onscreen_x = this.x*zoom - camera_x*zoom - (this.zoomed_size / 2);
+        this.onscreen_y = this.y*zoom - camera_y*zoom - (this.zoomed_size / 2);
+        //this.onscreen_x = this.x - camera_x - (this.zoomed_size / 2);
+        //this.onscreen_y = this.y - camera_y - (this.zoomed_size / 2);
 
         this.left = this.onscreen_x;
         this.right = this.onscreen_x + this.zoomed_size;
@@ -128,7 +140,7 @@ function asteroid(type, size, pos_x, pos_y) {
     this.mouseOver = function() {
 
         if ((this.bottom > canvas_1.mouse_y) && (this.top < canvas_1.mouse_y) && (this.right > canvas_1.mouse_x) && (this.left < canvas_1.mouse_x)) {
-            text_box.render(this.right, this.bottom);
+            this.text_box.render(this.right, this.bottom);
         }
     }
 }
@@ -139,29 +151,50 @@ function mouseOverText(text, font = 'Courier New', font_size = 14) {
     this.font_size = font_size;
 
     var longest_string = text.reduce((a, b) => a.length > b.length ? a : b, '');
-    this.width = font_size * longest_string.length;
-
+    this.width = font_size * longest_string.length / 2;
     this.height = font_size * text.length + font_size/2;
 
-    this.changeText = function(new_text) {
-        this.text = new_text;
-        this.width = font_size * new_text.length;
-        this.height = font_size * 2;
-    }
     this.render = function(x, y) {
-        
+        /*
         ctx.fillStyle = '#cccccc';
         ctx.fillRect(x, y, this.width, this.height);
         ctx.strokeStyle = 'grey';
         ctx.lineWidth = 2;
         ctx.strokeRect(x, y, this.width, this.height);
-
-        ctx.font = font_size + 'px' + font;
+        */
+        ctx.font = this.font_size + 'px ' + font + " bold";
         ctx.fillStyle = 'green'; // y+(i+1)*((this.font_size*2)/21)*13
         ctx.textAlign = 'right';
 
         for (var i = 0; i < this.text.length; i++) {
-            ctx.fillText(this.text[i], x+this.width/2, y+this.font_size*(i+1));
+
+            switch (this.text[i].resource) {
+                case "iron":
+                    ctx.fillStyle = 'rgb(156, 25, 19)';
+                    break;
+                case "alumina":
+                    ctx.fillStyle = 'rgb(180, 180, 180)';
+                    break;
+                case "magnesia":
+                    ctx.fillStyle = 'rgb(153, 153, 153)';
+                    break;
+                case "silica":
+                    ctx.fillStyle = 'rgb(172, 148, 83)';
+                    break;
+                case "graphite":
+                    ctx.fillStyle = 'rgb(77, 70, 51)';
+                    break;
+                case "sulphur":
+                    ctx.fillStyle = 'rgb(217, 217, 50)';
+                    break;
+                case "ammonia":
+                    ctx.fillStyle = 'rgb(100, 180, 148)';
+                    break;
+                default:
+                    ctx.fillStyle = 'rgb(255, 255, 255)';
+            }
+
+            ctx.fillText(this.text[i].text, x, y+this.font_size*(i+1)*1.2);
         }
     }
 }

@@ -24,8 +24,8 @@ var canvas_1 = {
         // On mouse move
         document.getElementById('canvas_1').addEventListener('mousemove', function (e) {
 
-            this.mouse_x = e.pageX;
-            this.mouse_y = e.pageY;
+            canvas_1.mouse_x = e.pageX;
+            canvas_1.mouse_y = e.pageY;
 
         })
 
@@ -181,8 +181,8 @@ function render() {
 
         for (var j = 0; j < canvas_1.height + background_height; j += background_height) {
 
-            var bpx = i - Math.round((camera_x / 10) % 500);
-            var bpy = j - Math.round((camera_y / 10) % 500);
+            var bpx = i - Math.ceil((camera_x / 10) % 500);
+            var bpy = j - Math.ceil((camera_y / 10) % 500);
 
             ctx.drawImage(background, bpx, bpy, background_width, background_height);
         }
