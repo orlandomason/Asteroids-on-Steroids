@@ -3,17 +3,17 @@ function startGame() {
 
     document.getElementById('non_canvas_content').style.display ='none';
     document.getElementById('canvas_1').style.display ='block';
-
-    generateMap();
 }
 
 var fps = 20;
 
 var canvas_1 = {
+
+    context: document.getElementById('canvas_1').getContext("2d"),
+    width: window.innerWidth,
+    height: window.innerHeight,
+
     start : function() {
-        this.width = window.innerWidth;
-        this.height = window.innerHeight;
-        this.context = document.getElementById('canvas_1').getContext("2d");
         document.body.insertBefore(document.getElementById('canvas_1'), document.body.childNodes[0]);
         this.interval = setInterval(updateGame, fps / 1000);
 
@@ -124,6 +124,13 @@ var count_left_clicks = false;
 var begin_drawing = false;
 var left_click_count = 0;
 var left_clicks = [];
+
+/* test
+require(['asteroid_spawning'], function() {
+    testo = new mouseOverText("example");
+    console.log(testo);
+    testo.render(100, 100);
+});*/
 
 
 function updateGame() {

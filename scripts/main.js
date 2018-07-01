@@ -7,10 +7,6 @@ function loadFiles() {
 		'generate_map',
 		'game'
 		], function() {
-
-	  	setTimeout(loadGame, 1000);
+	  	generateMap();
 	});
-}
-function loadGame() {
-	startGame();
 }

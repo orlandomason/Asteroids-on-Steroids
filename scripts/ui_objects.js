@@ -36,7 +36,7 @@ function createButton(x, y, font_size, type, text, active = false) {
         return clicked;
     }
 }
-
+/*
 function mouseOverText(text, font = 'Courier New', font_size = 12) {
 
     this.text = text;
@@ -49,7 +49,7 @@ function mouseOverText(text, font = 'Courier New', font_size = 12) {
         this.height = font_size * 2;
     }
     this.render = function(x, y) {
-        
+
         ctx.fillStyle = 'lightgrey';
         ctx.fillRect(x, y, this.width, this.height);
         ctx.strokeStyle = 'grey';
@@ -61,4 +61,4 @@ function mouseOverText(text, font = 'Courier New', font_size = 12) {
         ctx.textAlign = 'center';
         ctx.fillText(this.text, x+this.width/2, y+(this.height/21)*13);
     }
-}
+}*/

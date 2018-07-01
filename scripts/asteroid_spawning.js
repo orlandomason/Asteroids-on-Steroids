@@ -96,7 +96,11 @@ function asteroid(type, size, pos_x, pos_y) {
 
     }
 
-    //this.text = mouseOverText("example");
+    var text = [];
+    for (let [property, value] of Object.entries(this.resources)) {
+        text.push(property+": "+value+"%");
+    }
+    var text_box = new mouseOverText(text);
 
     this.image = new Image();
     this.image.src = 'vesta.png';
@@ -112,8 +116,8 @@ function asteroid(type, size, pos_x, pos_y) {
         this.top = this.onscreen_y;
         this.bottom = this.onscreen_y + this.zoomed_size;
 
-        this.mouseOver();
         this.render();
+        this.mouseOver();
     }
         
     this.render = function() {
@@ -124,7 +128,40 @@ function asteroid(type, size, pos_x, pos_y) {
     this.mouseOver = function() {
 
         if ((this.bottom > canvas_1.mouse_y) && (this.top < canvas_1.mouse_y) && (this.right > canvas_1.mouse_x) && (this.left < canvas_1.mouse_x)) {
-            //this.text.render();
+            text_box.render(this.right, this.bottom);
+        }
+    }
+}
+
+function mouseOverText(text, font = 'Courier New', font_size = 14) {
+
+    this.text = text;
+    this.font_size = font_size;
+
+    var longest_string = text.reduce((a, b) => a.length > b.length ? a : b, '');
+    this.width = font_size * longest_string.length;
+
+    this.height = font_size * text.length + font_size/2;
+
+    this.changeText = function(new_text) {
+        this.text = new_text;
+        this.width = font_size * new_text.length;
+        this.height = font_size * 2;
+    }
+    this.render = function(x, y) {
+        
+        ctx.fillStyle = '#cccccc';
+        ctx.fillRect(x, y, this.width, this.height);
+        ctx.strokeStyle = 'grey';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, this.width, this.height);
+
+        ctx.font = font_size + 'px' + font;
+        ctx.fillStyle = 'green'; // y+(i+1)*((this.font_size*2)/21)*13
+        ctx.textAlign = 'right';
+
+        for (var i = 0; i < this.text.length; i++) {
+            ctx.fillText(this.text[i], x+this.width/2, y+this.font_size*(i+1));
         }
     }
 }
