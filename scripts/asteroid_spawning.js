@@ -58,25 +58,37 @@ function asteroid(type, size, pos_x, pos_y) {
         var alumina = getRandomFloat(2, 3, 1);
         var sulphur = getRandomFloat(1, 6, 1);
         var graphite = getRandomFloat(1, 7, 1);
+
+        var ice = getRandomInt(3, 18);
+
         var iron = getRandomInt(15, 40);
         var magnesia = getRandomInt(20, 25);
-        var silica = 83 - iron - magnesia;
+        var silica = 83 - iron - magnesia - ice;
         var other = Math.round((100 - ammonia - alumina - sulphur - graphite - iron - magnesia - silica) * 100) / 100;
 
-        
-        this.resources = {
-            ammonia: ammonia,
-            alumina: alumina,
-            sulphur: sulphur,
-            graphite: graphite,
-            iron: iron,
-            magnesia: magnesia,
-            silica: silica,
-            other: other
+        this.resources = [
+            // Metal ores
+            {text: "iron", resource: crude_resources.iron, percentage: iron},
+            {text: "alumina", resource: crude_resources.alumina, percentage: alumina},
+            // Rock/lithophiles
+            {text: "magnesia", resource: crude_resources.magnesia, percentage: magnesia},
+            {text: "silica", resource: crude_resources.silica, percentage: silica},
+            // Volatiles/Organics
+            {text: "ammonia", resource: crude_resources.ammonia, percentage: ammonia},
+            {text: "graphite", resource: crude_resources.graphite, percentage: graphite},
+            {text: "ice", resource: crude_resources.ice, percentage: ice},
+            {text: "sulphur", resource: crude_resources.sulphur, percentage: sulphur}
+        ];
+
+        // Cubic metres
+        let volume = 4/3 * Math.PI * Math.pow(this.size/2, 3);
+        // Cubic centimetres
+        volume = volume / 1000000;
+        // Calculate tonnage of each resource
+        for (var i = 0; i < this.resources.length; i++) {
+            let grams = this.resources[i].resource.density * (volume * this.resources[i].percentage / 100);
+            this.resources[i].amount = grams * 1000000;
         }
-
-        //this.text_box = new mouseOverText(this.x, this.y, "ammonia");
-
         // Getting a random integer between two values, inclusive  -->  Math.floor(Math.random() * (max - min + 1)) + min;
 
         // Silica 25% - 40%
@@ -95,20 +107,18 @@ function asteroid(type, size, pos_x, pos_y) {
 
         // Phosphorus (P2O5) 0% - 0.4%
         // Potassium (K2O) 0% - 0.1%
-
     }
 
-    var text = [];
-    for (let [property, value] of Object.entries(this.resources)) {
+    /*for (let [property, value] of Object.entries(this.resources)) {
         text.push({resource: property, percentage: value, text: property+": "+value+"%"});
-    }
+    }*/
 
-    text.sort(function (a, b) {
+    /*text.sort(function (a, b) {
         return b.percentage - a.percentage;
-    });
+    });*/
 
 
-    this.text_box = new mouseOverText(text);
+    //let resource_text = new mouseOverText(this.resources);
 
 
     this.image = new Image();
@@ -140,11 +150,47 @@ function asteroid(type, size, pos_x, pos_y) {
     this.mouseOver = function() {
 
         if ((this.bottom > canvas_1.mouse_y) && (this.top < canvas_1.mouse_y) && (this.right > canvas_1.mouse_x) && (this.left < canvas_1.mouse_x)) {
-            this.text_box.render(this.right, this.bottom);
+            //resource_text.render(this.right, this.bottom);
+            ctx.font = "14px Courier New bold";
+            ctx.textAlign = 'right';
+
+            for (var i = 0; i < this.resources.length; i++) {
+            
+                switch (this.resources[i].text) {
+                    case "iron":
+                        ctx.fillStyle = 'rgb(156, 25, 19)';
+                        break;
+                    case "alumina":
+                        ctx.fillStyle = 'rgb(180, 180, 180)';
+                        break;
+                    case "magnesia":
+                        ctx.fillStyle = 'rgb(153, 153, 153)';
+                        break;
+                    case "silica":
+                        ctx.fillStyle = 'rgb(172, 148, 83)';
+                        break;
+                    case "graphite":
+                        ctx.fillStyle = 'rgb(77, 70, 51)';
+                        break;
+                    case "sulphur":
+                        ctx.fillStyle = 'rgb(217, 217, 50)';
+                        break;
+                    case "ammonia":
+                        ctx.fillStyle = 'rgb(100, 180, 148)';
+                        break;
+                    default:
+                        ctx.fillStyle = 'rgb(255, 255, 255)';
+                }
+
+                let text = this.resources[i].text + ": " + this.resources[i].percentage + "%";
+                ctx.fillText(text, this.right, this.bottom + 20*(i+1));
+            }
         }
     }
 }
 
+
+/*
 function mouseOverText(text, font = 'Courier New', font_size = 14) {
 
     this.text = text;
@@ -161,13 +207,13 @@ function mouseOverText(text, font = 'Courier New', font_size = 14) {
         ctx.strokeStyle = 'grey';
         ctx.lineWidth = 2;
         ctx.strokeRect(x, y, this.width, this.height);
-        */
+        *//*
         ctx.font = this.font_size + 'px ' + font + " bold";
         ctx.fillStyle = 'green'; // y+(i+1)*((this.font_size*2)/21)*13
         ctx.textAlign = 'right';
 
         for (var i = 0; i < this.text.length; i++) {
-
+            /*
             switch (this.text[i].resource) {
                 case "iron":
                     ctx.fillStyle = 'rgb(156, 25, 19)';
@@ -192,9 +238,9 @@ function mouseOverText(text, font = 'Courier New', font_size = 14) {
                     break;
                 default:
                     ctx.fillStyle = 'rgb(255, 255, 255)';
-            }
+            }*//*
 
             ctx.fillText(this.text[i].text, x, y+this.font_size*(i+1)*1.2);
         }
     }
-}
+}*/

@@ -39,6 +39,7 @@ function loadFiles() {
 		'asteroid_spawning',
 
 		// These files declare global variables
+		'materials',
 		'generate_map',
 		'camera',
 		'game'
