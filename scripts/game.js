@@ -5,8 +5,6 @@ function startGame() {
     document.getElementById('canvas_1').style.display ='block';
 }
 
-var fps = 20;
-
 var canvas_1 = {
 
     context: document.getElementById('canvas_1').getContext("2d"),
@@ -26,8 +24,8 @@ var canvas_1 = {
         // On mouse move
         document.getElementById('canvas_1').addEventListener('mousemove', function (e) {
 
-            canvas_1.mouse_x = e.pageX;
-            canvas_1.mouse_y = e.pageY;
+            this.mouse_x = e.pageX;
+            this.mouse_y = e.pageY;
 
         })
 
@@ -75,9 +73,9 @@ var canvas_1 = {
             }
         })
 
-        //
+        canvas_1.keys = [];
+
         window.addEventListener('keydown', function (e) {
-            canvas_1.keys = (canvas_1.keys || []);
             canvas_1.keys[e.keyCode] = true;
         })
         window.addEventListener('keyup', function (e) {
@@ -92,22 +90,6 @@ var canvas_1 = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Global variables
-var zoom = 1;
-var offset_x = 0;
-var offset_y = 0;
-
-var camera_x = map_width / 2;
-var camera_y = map_height / 2;
-var camera_speed = Math.round(20 / fps);
-var camera_speed_i = camera_speed;
-var camera_speed_max = camera_speed * 8;
-var camera_speed_ir = 5 * fps; // Increment rate
-var akd = false; // Arrow key down
-
-var update_count = 0;
-
-var game_objects = [];
-var temporary_objects = [];
 
 // updateGame variables
 var left_mouse_down = false;
@@ -125,15 +107,12 @@ var begin_drawing = false;
 var left_click_count = 0;
 var left_clicks = [];
 
-/* test
-require(['asteroid_spawning'], function() {
-    testo = new mouseOverText("example");
-    console.log(testo);
-    testo.render(100, 100);
-});*/
-
+var update_count = 0;
 
 function updateGame() {
+
+    var t0 = performance.now();
+
     update_count++;
 
     ctx = canvas_1.context;
@@ -153,34 +132,6 @@ function updateGame() {
         last_left_click_y = canvas_1.left_click_y;
         left_mouse_down = true;
     }
-
-    // Left mouse button is up
-    /*else {
-
-        if (left_mouse_down) {
-
-            if (count_left_clicks) {
-
-                left_clicks.push({x: last_left_click_x, y: last_left_click_y});
-                left_click_count++;
-            }
-            else {
-
-                left_clicks = [];
-                left_click_count = 0;
-            }
-
-            // Buttons
-            for (var i = 0; i < build_mode_buttons.length; i++) {
-
-                if (build_mode_buttons[i].clicked(last_left_click_x, last_left_click_y)) {
-                }            
-            }
-
-            left_mouse_down = false;
-        }
-    }*/
-
 
     // Middle mouse button is down
     if (canvas_1.middle_click_x && canvas_1.middle_click_y) {
@@ -207,64 +158,15 @@ function updateGame() {
         right_mouse_down = false;
     }
 
-
-    // Zoom
-    if (canvas_1.keys[107] && zoom < 2) { 
-
-        var ax = canvas_1.mouse_x / zoom + offset_x / zoom;
-        var ay = canvas_1.mouse_y / zoom + offset_y / zoom;
-
-        console.log(canvas_1.mouse_x / zoom + offset_x / zoom);
-
-        zoom += 0.1;
-
-        offset_x = ax * (zoom - 1);
-        offset_y = ay * (zoom - 1);
-    }
-
-    if (canvas_1.keys[109] && zoom > 1) {
-
-        var ax = canvas_1.mouse_x / zoom + offset_x / zoom; // This does not seem to be the problem
-        var ay = canvas_1.mouse_y / zoom + offset_y / zoom; // or at least it gives an accurate answer
-
-        console.log(canvas_1.mouse_x / zoom + offset_x / zoom);
-
-        zoom -= 0.1; // I've tried moving this to the start and to the end, it only works properly here
-
-        offset_x = ax * (zoom - 1); // I think the problem lies here in the zoom part, or something is missing
-        offset_y = ay * (zoom - 1); // The problem also occurs when moving the mouse around when you zoom in
-    }
-
-    var max_camera_x = map_width - canvas_1.width / zoom;
-    var max_camera_y = map_height - canvas_1.height / zoom;
-    // Arrow keys: left right up down
-    if (canvas_1.keys[37]) { 
-        if (camera_x > 0) { camera_x -= camera_speed_i; akd = true; } 
-    } 
-    if (canvas_1.keys[39]) { 
-       if (camera_x < max_camera_x) { camera_x += camera_speed_i; akd = true; }
-    }
-    if (canvas_1.keys[38]) { 
-        if (camera_y > 0) { camera_y -= camera_speed_i; akd = true; }
-    }
-    if (canvas_1.keys[40]) { 
-        if (camera_y < max_camera_y) { camera_y += camera_speed_i; akd = true; }
-    }
-
-    // If any arrow key is pressed
-    if (akd) {
-        if (update_count % camera_speed_ir == 0) {
-            camera_speed_i = incrementNumber(camera_speed_i, 1, camera_speed_max);
-        }
-        akd = false;
-    }
-    else { 
-        camera_speed_i = camera_speed; 
-    }
+    camera_update();
+    var t1 = performance.now();
+    //if (update_count % (fps*10) == 0) { console.log(t1 - t0 + " milliseconds per frame"); }
 }
 
 var background = new Image(); 
 background.src = 'seamless_space.png';
+var background_width = 500;
+var background_height = 500;
 
 function render() {
 
@@ -273,29 +175,25 @@ function render() {
     canvas_1.width = window.innerWidth;
     canvas_1.height = window.innerHeight;
 
-    // Background ///////////////////////////////////////
-
-    // canvas_1.mouse_x
-
-    var background_width = 500 * zoom;
-    var background_height = 500 * zoom;
+    // Background //////////////////////////////////////
 
     for (var i = 0; i < canvas_1.width + background_width; i += background_width) {
 
         for (var j = 0; j < canvas_1.height + background_height; j += background_height) {
 
-            var bpx = i - offset_x - Math.round((camera_x / 10) % 500);
-            var bpy = j - offset_y - Math.round((camera_y / 10) % 500);
+            var bpx = i - Math.round((camera_x / 10) % 500);
+            var bpy = j - Math.round((camera_y / 10) % 500);
 
             ctx.drawImage(background, bpx, bpy, background_width, background_height);
         }
     }
-    //////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////
 
     for (var i = 0; i < asteroids.length; i++) {
         asteroids[i].update();
     }
 }
+
 
 function drawShape(arr, close_path = false, color = 'lightgrey', border_width = 0, border_color = 'black') {
 
@@ -334,19 +232,3 @@ function drawShape(arr, close_path = false, color = 'lightgrey', border_width = 
         }
 	}
 }
-
-/*this.image = new image();
-this.image.src = 'rocket.png';
-
-this.render = function() {
-
-    var a = this.x;
-    var b = this.y;
-    //var angle = this.rotation;
-
-    //var x = a + radius * Math.cos(angle);
-    //var y = b + radius * Math.sin(angle);
-    //ctx.rotate(angle*Math.PI/180);
-    ctx.drawImage(this.image, a, b);
-}*/
-

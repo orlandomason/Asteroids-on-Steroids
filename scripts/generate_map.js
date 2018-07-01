@@ -38,7 +38,7 @@ var asda = 10; // asteroid size distrbution averaging, must be 1 or more and pre
 // The higher it is the more even the distribution asteroids from large to small
 
 function generateMap() {
-
+	
 	var avn = -chance_of_max_size / (chance_of_max_size - 1);
 
 	if (use_chance_of_max_size) {
@@ -94,7 +94,8 @@ function generateMap() {
 			var y = getRandomInt(map_margin, map_spawn_width + map_margin);
 
 			// Check that coordinates are the minimum distance from each asteroids
-			for (var k = 0; k < asteroids.length; k++) {
+			var astsl = asteroids.length;
+			for (var k = 0; k < astsl; k++) {
 
 				// Calculate distance between coordinates and each asteroid
 				var dist = Math.sqrt( Math.pow(x - asteroids[k].x, 2) + Math.pow(y - asteroids[k].y, 2) );
@@ -113,6 +114,5 @@ function generateMap() {
 			}
 		}
 	}
-
 	startGame();
 }
