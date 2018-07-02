@@ -33,13 +33,11 @@ function loadFiles() {
 	};
 
 	requireQueue([
-		// These files only contain functions
 		'useful_functions',
 		'ui_objects',
+		'materials',
 		'asteroid_spawning',
 
-		// These files declare global variables
-		'materials',
 		'generate_map',
 		'camera',
 		'game'

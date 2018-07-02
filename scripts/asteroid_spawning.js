@@ -1,50 +1,3 @@
-
-// Weight is molar mass and density is g/cm3 (mostly at room temperature or when solid)
-function resource(name, weight, density, chemical_formula = "n/a") {
-    this.name = name;
-    this.weight = weight;
-    this.density = density;
-    this.chemical_formula = chemical_formula;
-}
-/*
-var materials = [
-
-new material("platinum group metals", 150, 16),
-new material("graphite", 12.011, 2.266, "C"),
-new material("silica", 60.08, 2.648, "SiO2"),
-new material("alumina", 101.96, 3.987, "Al2O3"),
-new material("ferrous oxide", 71.844, 5.74, "FeO"),
-new material("magnesia", 40.3044, 3.58, "MgO"),
-
-// Volatiles
-new material("water ice", 18.01528, 0.9340, "H2O"), 
-new material("phosphorus", 283.886, 2.39, "P2O5"),
-new material("potassium", 94.2, 2.35, "K2O"),
-new material("sulfur", 32.065, 2, "S"),
-new material("ammonia", 17.031, 8.17, "NH3"),
-];
-*/
-var resources = {
-
-iron: new resource("iron", 55.845, 7.86, "Fe"),
-// ferrous_oxide: new resource("ferrous oxide", 71.844, 5.74, "FeO"),
-pgm: new resource("platinum group metals", 150, 16),
-graphite: new resource("graphite", 12.011, 2.266, "C"),
-silica: new resource("silica", 60.08, 2.648, "SiO2"),
-alumina: new resource("alumina", 101.96, 3.987, "Al2O3"),
-magnesia: new resource("magnesia", 40.3044, 3.58, "MgO"),
-
-// Volatiles
-H2O: new resource("water ice", 18.01528, 0.9340, "H2O"), 
-phosphorus: new resource("phosphorus", 283.886, 2.39, "P2O5"),
-potassium: new resource("potassium", 94.2, 2.35, "K2O"),
-sulphur: new resource("sulphur", 32.065, 2, "S"),
-ammonia: new resource("ammonia", 17.031, 8.17, "NH3")
-};
-
-//{resource: iron, type: metal, goldschmidt_classification: siderophile}
-
-
 function asteroid(type, size, pos_x, pos_y) {
 
     this.type = type;
@@ -147,100 +100,54 @@ function asteroid(type, size, pos_x, pos_y) {
         ctx.drawImage(this.image, this.onscreen_x, this.onscreen_y, this.zoomed_size, this.zoomed_size);
     }
 
+    let scanned = false;
+    let button = new standardButton("scan");
+
     this.mouseOver = function() {
+        if (scanned == false) {
+            if ((this.bottom+button.height > canvas_1.mouse_y) && (this.top < canvas_1.mouse_y) && (this.right+button.width > canvas_1.mouse_x) && (this.left < canvas_1.mouse_x)) {
+                button.render(this.left, this.bottom);
+                if (button.clicked()) { scanned = true; }
+            }
+        }
 
         if ((this.bottom > canvas_1.mouse_y) && (this.top < canvas_1.mouse_y) && (this.right > canvas_1.mouse_x) && (this.left < canvas_1.mouse_x)) {
-            //resource_text.render(this.right, this.bottom);
-            ctx.font = "14px Courier New bold";
-            ctx.textAlign = 'right';
+            if (scanned) {
+                ctx.font = "14px Courier New bold";
+                ctx.textAlign = 'right';
 
-            for (var i = 0; i < this.resources.length; i++) {
-            
-                switch (this.resources[i].text) {
-                    case "iron":
-                        ctx.fillStyle = 'rgb(156, 25, 19)';
-                        break;
-                    case "alumina":
-                        ctx.fillStyle = 'rgb(180, 180, 180)';
-                        break;
-                    case "magnesia":
-                        ctx.fillStyle = 'rgb(153, 153, 153)';
-                        break;
-                    case "silica":
-                        ctx.fillStyle = 'rgb(172, 148, 83)';
-                        break;
-                    case "graphite":
-                        ctx.fillStyle = 'rgb(77, 70, 51)';
-                        break;
-                    case "sulphur":
-                        ctx.fillStyle = 'rgb(217, 217, 50)';
-                        break;
-                    case "ammonia":
-                        ctx.fillStyle = 'rgb(100, 180, 148)';
-                        break;
-                    default:
-                        ctx.fillStyle = 'rgb(255, 255, 255)';
+                for (var i = 0; i < this.resources.length; i++) {
+                
+                    switch (this.resources[i].text) {
+                        case "iron":
+                            ctx.fillStyle = 'rgb(156, 25, 19)';
+                            break;
+                        case "alumina":
+                            ctx.fillStyle = 'rgb(180, 180, 180)';
+                            break;
+                        case "magnesia":
+                            ctx.fillStyle = 'rgb(153, 153, 153)';
+                            break;
+                        case "silica":
+                            ctx.fillStyle = 'rgb(172, 148, 83)';
+                            break;
+                        case "graphite":
+                            ctx.fillStyle = 'rgb(77, 70, 51)';
+                            break;
+                        case "sulphur":
+                            ctx.fillStyle = 'rgb(217, 217, 50)';
+                            break;
+                        case "ammonia":
+                            ctx.fillStyle = 'rgb(100, 180, 148)';
+                            break;
+                        default:
+                            ctx.fillStyle = 'rgb(255, 255, 255)';
+                    }
+
+                    let text = this.resources[i].text + ": " + this.resources[i].percentage + "%";
+                    ctx.fillText(text, this.right, this.bottom + 20*(i+1));
                 }
-
-                let text = this.resources[i].text + ": " + this.resources[i].percentage + "%";
-                ctx.fillText(text, this.right, this.bottom + 20*(i+1));
             }
         }
     }
 }
-
-
-/*
-function mouseOverText(text, font = 'Courier New', font_size = 14) {
-
-    this.text = text;
-    this.font_size = font_size;
-
-    var longest_string = text.reduce((a, b) => a.length > b.length ? a : b, '');
-    this.width = font_size * longest_string.length / 2;
-    this.height = font_size * text.length + font_size/2;
-
-    this.render = function(x, y) {
-        /*
-        ctx.fillStyle = '#cccccc';
-        ctx.fillRect(x, y, this.width, this.height);
-        ctx.strokeStyle = 'grey';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(x, y, this.width, this.height);
-        *//*
-        ctx.font = this.font_size + 'px ' + font + " bold";
-        ctx.fillStyle = 'green'; // y+(i+1)*((this.font_size*2)/21)*13
-        ctx.textAlign = 'right';
-
-        for (var i = 0; i < this.text.length; i++) {
-            /*
-            switch (this.text[i].resource) {
-                case "iron":
-                    ctx.fillStyle = 'rgb(156, 25, 19)';
-                    break;
-                case "alumina":
-                    ctx.fillStyle = 'rgb(180, 180, 180)';
-                    break;
-                case "magnesia":
-                    ctx.fillStyle = 'rgb(153, 153, 153)';
-                    break;
-                case "silica":
-                    ctx.fillStyle = 'rgb(172, 148, 83)';
-                    break;
-                case "graphite":
-                    ctx.fillStyle = 'rgb(77, 70, 51)';
-                    break;
-                case "sulphur":
-                    ctx.fillStyle = 'rgb(217, 217, 50)';
-                    break;
-                case "ammonia":
-                    ctx.fillStyle = 'rgb(100, 180, 148)';
-                    break;
-                default:
-                    ctx.fillStyle = 'rgb(255, 255, 255)';
-            }*//*
-
-            ctx.fillText(this.text[i].text, x, y+this.font_size*(i+1)*1.2);
-        }
-    }
-}*/
