@@ -15,6 +15,17 @@ sulphur: {type: "organic", goldschmidt_classification: "chalcophile", density: 2
 
 };
 
+var fuels = {
+	methane: {liquid_density: 0.424, molecular_weight: 16.04},
+	oxygen: {liquid_density: 1.141, molecular_weight: 16}
+}
+
+// Oxidizer Density: 1.140 g/cm3. Oxidizer Freezing Point: -219 deg C. Oxidizer Boiling Point: -183 deg C. Fuel Density: 0.424 g/cm3. Fuel Freezing Point: -184 deg C. Fuel Boiling Point: -162 deg C.
+// Oxidizer Flow Rate	1.38 kg/s
+// Fuel Flow Rate	0.63 kg/s
+// mixture ratio 2.19
+// Methane must be cooled below its critical temperature of -82.3 °C in order to be liquified under pressure.
+
 /*
 var resources = {
 

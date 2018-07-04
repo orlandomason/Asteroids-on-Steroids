@@ -5,6 +5,18 @@ function startGame() {
     document.getElementById('canvas_1').style.display ='block';
 }
 
+// Mouse position
+var mouse_x;
+var mouse_y;
+
+// left mouse buttom down/up
+var lmbdx;
+var lmbdy;
+var lmbux;
+var lmbuy;
+var lmbd = false;
+var lmbu = false;
+
 var canvas_1 = {
 
     context: document.getElementById('canvas_1').getContext("2d"),
@@ -27,6 +39,9 @@ var canvas_1 = {
             canvas_1.mouse_x = e.pageX;
             canvas_1.mouse_y = e.pageY;
 
+            mouse_x = e.pageX;
+            mouse_y = e.pageY;
+
         })
 
         // Prevent context menu popping up on right click
@@ -40,8 +55,9 @@ var canvas_1 = {
 
             // Left click
             if (e.button == 0) {
-                canvas_1.left_click_x = e.pageX;
-                canvas_1.left_click_y = e.pageY;
+                lmbdx = e.pageX;
+                lmbdy = e.pageY;
+                lmbd = true;
             } 
             // Midle click
             else if (e.button == 1) {
@@ -56,10 +72,13 @@ var canvas_1 = {
         })
 
         document.getElementById('canvas_1').addEventListener('mouseup', function (e) {
+
             // Left click
             if (e.button == 0) {
-                canvas_1.left_click_x = false;
-                canvas_1.left_click_y = false;
+                lmbux = lmbdx;
+                lmbuy = lmbdy;
+                lmbd = false;
+                lmbu = true; // set to false at the bottom of update function
             } 
             // Middle click
             else if (e.button == 1) {
@@ -93,8 +112,6 @@ var canvas_1 = {
 
 // updateGame variables
 var left_mouse_down = false;
-var last_left_click_x;
-var last_left_click_y;
 var middle_mouse_down = false;
 var last_middle_click_x;
 var last_middle_click_y;
@@ -126,12 +143,14 @@ function updateGame() {
     // mouse_is_down is set to true to detect that it has been clicked and set back to false when the mouse button is lifted.
 
     // Left mouse button is down
-    if (canvas_1.left_click_x && canvas_1.left_click_y) {
+    /*if (canvas_1.left_click_x && canvas_1.left_click_y) {
 
+        lmbdx = canvas_1.left_click_x;
+        lmbdy = canvas_1.left_click_y;
         last_left_click_x = canvas_1.left_click_x;
         last_left_click_y = canvas_1.left_click_y;
         left_mouse_down = true;
-    }
+    }*/
 
     // Middle mouse button is down
     if (canvas_1.middle_click_x && canvas_1.middle_click_y) {
@@ -159,6 +178,9 @@ function updateGame() {
     }
 
     camera_update();
+
+    lmbu = false;
+
     var t1 = performance.now();
     //if (update_count % (fps*10) == 0) { console.log(t1 - t0 + " milliseconds per frame"); }
 }
@@ -198,8 +220,6 @@ function render() {
 function drawShape(arr, close_path = false, color = 'lightgrey', border_width = 0, border_color = 'black') {
 
     var border = border_width*(Math.ceil(zoom/10));
-
-
 
 	this.render = function() {
 		

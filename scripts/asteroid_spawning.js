@@ -1,9 +1,15 @@
+
+var scans_left = 3;
+
 function asteroid(type, size, pos_x, pos_y) {
 
     this.type = type;
     this.size = size;
     this.x = pos_x;
     this.y = pos_y;
+    let select = false;
+    let centre_x;
+    let centre_y;
 
     if (type == "c-type") {
 
@@ -21,16 +27,16 @@ function asteroid(type, size, pos_x, pos_y) {
 
         this.resources = [
             // Metal ores
-            {text: "iron", resource: crude_resources.iron, percentage: iron},
-            {text: "alumina", resource: crude_resources.alumina, percentage: alumina},
+            {text: "iron", resource: crude_resources.iron, percentage: iron, colour: 'rgb(156, 25, 19)'},
+            {text: "alumina", resource: crude_resources.alumina, percentage: alumina, colour: 'rgb(204, 204, 204)'},
             // Rock/lithophiles
-            {text: "magnesia", resource: crude_resources.magnesia, percentage: magnesia},
-            {text: "silica", resource: crude_resources.silica, percentage: silica},
+            {text: "magnesia", resource: crude_resources.magnesia, percentage: magnesia, colour: 'rgb(153, 153, 153)'},
+            {text: "silica", resource: crude_resources.silica, percentage: silica, colour: 'rgb(172, 148, 83)'},
             // Volatiles/Organics
-            {text: "ammonia", resource: crude_resources.ammonia, percentage: ammonia},
-            {text: "graphite", resource: crude_resources.graphite, percentage: graphite},
-            {text: "ice", resource: crude_resources.ice, percentage: ice},
-            {text: "sulphur", resource: crude_resources.sulphur, percentage: sulphur}
+            {text: "graphite", resource: crude_resources.graphite, percentage: graphite, colour: 'rgb(77, 70, 51)'},
+            {text: "ammonia", resource: crude_resources.ammonia, percentage: ammonia, colour: 'rgb(46, 184, 80)'},
+            {text: "ice", resource: crude_resources.ice, percentage: ice, colour: 'rgb(0, 102, 255)'},
+            {text: "sulphur", resource: crude_resources.sulphur, percentage: sulphur, colour: 'rgb(217, 217, 50)'}
         ];
 
         // Cubic metres
@@ -42,7 +48,6 @@ function asteroid(type, size, pos_x, pos_y) {
             let grams = this.resources[i].resource.density * (volume * this.resources[i].percentage / 100);
             this.resources[i].amount = grams * 1000000;
         }
-        // Getting a random integer between two values, inclusive  -->  Math.floor(Math.random() * (max - min + 1)) + min;
 
         // Silica 25% - 40%
         // Magnesia 20% - 25%  (from forsterite)
@@ -51,31 +56,17 @@ function asteroid(type, size, pos_x, pos_y) {
         // Graphite 1% - 7%
         // Sulphur 1% - 6%
         // Alumina 2% - 3%
-        
-        // Ammonia 0% - 1%
-
-        // Math.round(Math.pow(Math.random(), 2)*100)/100; 
-        // Exponential curve up to 1, rounded to 2dp
-
-
         // Phosphorus (P2O5) 0% - 0.4%
         // Potassium (K2O) 0% - 0.1%
     }
 
-    /*for (let [property, value] of Object.entries(this.resources)) {
-        text.push({resource: property, percentage: value, text: property+": "+value+"%"});
-    }*/
-
-    /*text.sort(function (a, b) {
-        return b.percentage - a.percentage;
-    });*/
-
-
-    //let resource_text = new mouseOverText(this.resources);
-
 
     this.image = new Image();
     this.image.src = 'vesta.png';
+
+    let scanned = false;
+    let button = new standardButton(["Scan", "Colonise"], this.size);
+    let text;
 
     this.update = function() {
 
@@ -91,8 +82,18 @@ function asteroid(type, size, pos_x, pos_y) {
         this.top = this.onscreen_y;
         this.bottom = this.onscreen_y + this.zoomed_size;
 
+        centre_x = this.onscreen_x + this.zoomed_size/2;
+        centre_y = this.onscreen_y + this.zoomed_size/2;
+
         this.render();
         this.mouseOver();
+
+        if (lmbu) {
+            select = leftClick(this.left, this.top, this.right, this.bottom + button.height);
+        }
+        if (select) {
+            this.select();
+        }
     }
         
     this.render = function() {
@@ -100,54 +101,82 @@ function asteroid(type, size, pos_x, pos_y) {
         ctx.drawImage(this.image, this.onscreen_x, this.onscreen_y, this.zoomed_size, this.zoomed_size);
     }
 
-    let scanned = false;
-    let button = new standardButton("scan");
-
     this.mouseOver = function() {
-        if (scanned == false) {
-            if ((this.bottom+button.height > canvas_1.mouse_y) && (this.top < canvas_1.mouse_y) && (this.right+button.width > canvas_1.mouse_x) && (this.left < canvas_1.mouse_x)) {
-                button.render(this.left, this.bottom);
-                if (button.clicked()) { scanned = true; }
-            }
-        }
 
-        if ((this.bottom > canvas_1.mouse_y) && (this.top < canvas_1.mouse_y) && (this.right > canvas_1.mouse_x) && (this.left < canvas_1.mouse_x)) {
+        /*if (mouseOver(this.left, this.top, this.right, this.bottom)) {
+            
             if (scanned) {
-                ctx.font = "14px Courier New bold";
+                ctx.font = "14px Trebuchet MS";
                 ctx.textAlign = 'right';
 
                 for (var i = 0; i < this.resources.length; i++) {
                 
-                    switch (this.resources[i].text) {
-                        case "iron":
-                            ctx.fillStyle = 'rgb(156, 25, 19)';
-                            break;
-                        case "alumina":
-                            ctx.fillStyle = 'rgb(180, 180, 180)';
-                            break;
-                        case "magnesia":
-                            ctx.fillStyle = 'rgb(153, 153, 153)';
-                            break;
-                        case "silica":
-                            ctx.fillStyle = 'rgb(172, 148, 83)';
-                            break;
-                        case "graphite":
-                            ctx.fillStyle = 'rgb(77, 70, 51)';
-                            break;
-                        case "sulphur":
-                            ctx.fillStyle = 'rgb(217, 217, 50)';
-                            break;
-                        case "ammonia":
-                            ctx.fillStyle = 'rgb(100, 180, 148)';
-                            break;
-                        default:
-                            ctx.fillStyle = 'rgb(255, 255, 255)';
-                    }
-
-                    let text = this.resources[i].text + ": " + this.resources[i].percentage + "%";
-                    ctx.fillText(text, this.right, this.bottom + 20*(i+1));
+                    ctx.fillStyle = this.resources[i].colour;
+                    text = this.resources[i].text + ": " + this.resources[i].percentage + "%";
+                    ctx.fillText(text, this.left, this.top + 20*(i+1));
                 }
             }
+
+            else {
+
+                ctx.textAlign = 'middle';
+                for (var i = 0; i < this.resources.length; i++) {
+                    
+                    ctx.fillStyle = this.resources[i].colour;
+
+                    /*switch (this.resources[i].text) {
+                        case "iron":
+                            text = this.resources[i].text + ": 15%-40%";
+                            ctx.fillText(text, this.right, this.bottom + 20*(i+3));
+                            break;
+                        case "alumina":
+                            break;
+                        case "magnesia":
+                            break;
+                        case "silica":
+                            break;
+                        case "graphite":
+                            break;
+                        case "sulphur":
+                            break;
+                        case "ammonia":
+                            break;
+                        default:
+                    }
+                }
+            }
+        }*/
+    }
+
+    this.select = function() {
+
+        button.render(this.left, Math.round(this.bottom+1));
+        if (!scanned) {
+            if (button.clicked() == 1) { scanned = true; scans_left--; }
         }
+        if (button.clicked() == 2) { this.colonise(); }
+        
+        if (scanned) {
+            ctx.font = "14px Trebuchet MS";
+            ctx.textAlign = 'right';
+
+            for (var i = 0; i < this.resources.length; i++) {
+            
+                ctx.fillStyle = this.resources[i].colour;
+                text = this.resources[i].text + ": " + this.resources[i].percentage + "%";
+                ctx.fillText(text, this.left-8, this.top + 20*(i+1));
+            }
+        }
+
+        /*let grd = ctx.createLinearGradient(this.left, this.top, this.left, this.bottom);
+        grd.addColorStop(0, "black");
+        grd.addColorStop(0.5, "white");
+        grd.addColorStop(1, "black");
+        ctx.strokeStyle = grd;
+        ctx.lineWidth = 2;
+
+        ctx.beginPath();
+        ctx.arc(centre_x, centre_y, this.zoomed_size/2, 0, 2*Math.PI);
+        ctx.stroke();*/
     }
 }

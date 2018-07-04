@@ -19,3 +19,31 @@ function incrementNumber(num, amount, max = number + amount) {
 	}
 	return num;
 }
+
+
+// Game
+function leftClick(l, t, r, b) {
+    if (lmbu) {
+        if ((l <= lmbux) && (r >= lmbux) && (t <= lmbuy) && (b >= lmbuy)) {
+            return true;
+        }
+    }
+}
+
+function mouseOver(l, t, r, b) {
+    if ((l <= mouse_x) && (r >= mouse_x) && (t <= mouse_y) && (b >= mouse_y)) {
+        return true;
+    }
+}
+
+/*
+var object_selected = false;
+function lmbSelect(l, t, r, b) {
+
+    // If this is clicked then select, but if something else is clicked then unselect 
+    object_selected = leftClick(l, t, r, b);
+    else if (lmbd = true) {
+        object_selected = false;
+    }
+    return object_selected;
+}*/
