@@ -70,17 +70,7 @@ function asteroid(type, size, pos_x, pos_y) {
 
     this.update = function() {
 
-        this.zoomed_size = this.size * zoom;
-
-        this.onscreen_x = this.x*zoom - camera_x*zoom - (this.zoomed_size / 2);
-        this.onscreen_y = this.y*zoom - camera_y*zoom - (this.zoomed_size / 2);
-        //this.onscreen_x = this.x - camera_x - (this.zoomed_size / 2);
-        //this.onscreen_y = this.y - camera_y - (this.zoomed_size / 2);
-
-        this.left = this.onscreen_x;
-        this.right = this.onscreen_x + this.zoomed_size;
-        this.top = this.onscreen_y;
-        this.bottom = this.onscreen_y + this.zoomed_size;
+        getOSP(this);
 
         centre_x = this.onscreen_x + this.zoomed_size/2;
         centre_y = this.onscreen_y + this.zoomed_size/2;

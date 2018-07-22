@@ -58,7 +58,6 @@ function standardButton(text, width, font_size = 14, font = "Trebuchet MS") {
 
 }
 
-
 /*
 function standardButton(text, font_size = 16, font = "Courier New bold") {
     

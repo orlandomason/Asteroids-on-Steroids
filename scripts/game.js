@@ -17,6 +17,28 @@ var lmbuy;
 var lmbd = false;
 var lmbu = false;
 
+// right mouse buttom down/up
+var rmbdx;
+var rmbdy;
+var rmbux;
+var rmbuy;
+var rmbd = false;
+var rmbu = false;
+
+// middle mouse buttom down/up
+var mmbdx;
+var mmbdy;
+var mmbux;
+var mmbuy;
+var mmbd = false;
+var mmbu = false;
+
+// Mouse wheel
+var mw;
+
+var keys = [];
+
+
 var canvas_1 = {
 
     context: document.getElementById('canvas_1').getContext("2d"),
@@ -25,7 +47,7 @@ var canvas_1 = {
 
     start : function() {
         document.body.insertBefore(document.getElementById('canvas_1'), document.body.childNodes[0]);
-        this.interval = setInterval(updateGame, fps / 1000);
+        this.interval = setInterval(updateGame, 1000 / fps);
 
 
         // |---------------------------|
@@ -61,13 +83,15 @@ var canvas_1 = {
             } 
             // Midle click
             else if (e.button == 1) {
-                canvas_1.middle_click_x = e.pageX;
-                canvas_1.middle_click_y = e.pageY;
+                mmbdx = e.pageX;
+                mmbdy = e.pageY;
+                mmbd = true;
             }
             // Right click
             else if (e.button == 2) {
-                canvas_1.right_click_x = e.pageX;
-                canvas_1.right_click_y = e.pageY;
+                rmbdx = e.pageX;
+                rmbdy = e.pageY;
+                rmbd = true;
             }
         })
 
@@ -82,23 +106,35 @@ var canvas_1 = {
             } 
             // Middle click
             else if (e.button == 1) {
-                canvas_1.middle_click_x = false;
-                canvas_1.middle_click_y = false;
+                mmbux = e.pageX;
+                mmbuy = e.pageY;
+                mmbd = false;
+                mmbu = true; // set to false at the bottom of update function
             }
             // Right click
             else if (e.button == 2) {
-                canvas_1.right_click_x = false;
-                canvas_1.right_click_y = false;
+                rmbux = rmbdx;
+                rmbuy = rmbdy;
+                rmbd = false;
+                rmbu = true; // set to false at the bottom of update function
             }
         })
+
+        document.getElementById('canvas_1').addEventListener('mousewheel', function (e) {
+
+            mw = Math.round(e.deltaY/(100/3)); // set to 0 at the bottom of update function
+        })
+
 
         canvas_1.keys = [];
 
         window.addEventListener('keydown', function (e) {
             canvas_1.keys[e.keyCode] = true;
+            keys[e.keyCode] = true;
         })
         window.addEventListener('keyup', function (e) {
             canvas_1.keys[e.keyCode] = false; 
+            keys[e.keyCode] = false;
         })
     },
     clear : function() {
@@ -165,21 +201,12 @@ function updateGame() {
     }
 
 
-    // Right mouse button is down
-    if (canvas_1.right_click_x && canvas_1.right_click_y) {
-
-        right_mouse_down = true;
-    }
-
-    // Right mouse button is up
-    else {
-
-        right_mouse_down = false;
-    }
-
     camera_update();
 
     lmbu = false;
+    rmbu = false;
+    mmbu = false;
+    mw = 0;
 
     var t1 = performance.now();
     //if (update_count % (fps*10) == 0) { console.log(t1 - t0 + " milliseconds per frame"); }
@@ -214,6 +241,8 @@ function render() {
     for (var i = 0; i < asteroids.length; i++) {
         asteroids[i].update();
     }
+
+    ship1.update();
 }
 
 

@@ -36,6 +36,7 @@ function loadFiles() {
 		'useful_functions',
 		'ui_objects',
 		'materials',
+		'ship',
 		'asteroid_spawning',
 
 		'generate_map',

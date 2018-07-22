@@ -36,14 +36,30 @@ function mouseOver(l, t, r, b) {
     }
 }
 
-/*
-var object_selected = false;
-function lmbSelect(l, t, r, b) {
+function lmbSelect(object) {
 
-    // If this is clicked then select, but if something else is clicked then unselect 
-    object_selected = leftClick(l, t, r, b);
-    else if (lmbd = true) {
-        object_selected = false;
+    if (lmbu) {
+        object.selected = leftClick(object.left, object.top, object.right, object.bottom);
     }
-    return object_selected;
-}*/
+    if (object.selected) {
+        object.select();
+    }
+}
+
+// OSP: on-screen position
+function getOSP(object) {
+
+    let size = object.size; 
+    let x = object.x;
+    let y = object.y;
+
+    object.zoomed_size = size * zoom;
+
+    object.onscreen_x = x * zoom - camera_x * zoom - (object.zoomed_size / 2);
+    object.onscreen_y = y * zoom - camera_y * zoom - (object.zoomed_size / 2);
+
+    object.left = object.onscreen_x;
+    object.right = object.onscreen_x + object.zoomed_size;
+    object.top = object.onscreen_y;
+    object.bottom = object.onscreen_y + object.zoomed_size;
+}
